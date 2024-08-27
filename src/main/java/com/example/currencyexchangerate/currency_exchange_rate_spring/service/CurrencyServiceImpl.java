@@ -3,8 +3,8 @@ package com.example.currencyexchangerate.currency_exchange_rate_spring.service;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.entities.Currency;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.error.ResourceNotFoundException;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.repositories.CurrencyRepository;
-
 import com.example.currencyexchangerate.currency_exchange_rate_spring.service.interfaces.CurrencyService;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,9 @@ public class CurrencyServiceImpl implements CurrencyService {
   @Transactional
   @Override
   public void upsertCurrencyAll(List<Currency> currencies) {
-
+    for (Currency currency : currencies) {
+      currencyRepository.upsertCurrency(currency);
+    }
   }
 
 }

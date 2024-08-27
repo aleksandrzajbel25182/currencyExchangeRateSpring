@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "exchangeRates")
+@Table(name = "exchangerates")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,11 +30,11 @@ public class ExchangeRate {
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "basecurrencyId")
+  @JoinColumn(name = "basecurrencyid")
   private Currency baseCurrency;
 
   @ManyToOne
-  @JoinColumn(name = "targetcurrencyId")
+  @JoinColumn(name = "targetcurrencyid")
   private Currency targetCurrency;
 
   @Column(name = "rate")

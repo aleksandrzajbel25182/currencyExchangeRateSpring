@@ -4,12 +4,13 @@ import com.example.currencyexchangerate.currency_exchange_rate_spring.entities.E
 import com.example.currencyexchangerate.currency_exchange_rate_spring.error.ResourceNotFoundException;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.repositories.CurrencyRepository;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.repositories.ExchangeRateRepository;
-
 import com.example.currencyexchangerate.currency_exchange_rate_spring.service.interfaces.ExchangeRateService;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ExchangeRateServiceImpl implements ExchangeRateService {
@@ -47,8 +48,11 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
     exchangeRateRepository.saveAll(exchangeRates);
   }
 
+  @Transactional
   @Override
   public void upsertExchangeRateAll(List<ExchangeRate> exchangeRates) {
-
+    for (ExchangeRate exchangerate : exchangeRates) {
+      exchangeRateRepository.upsertExchangeRate(exchangerate);
+    }
   }
 }
