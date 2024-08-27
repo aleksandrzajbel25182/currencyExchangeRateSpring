@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ExchangeRateRepository extends JpaRepository<ExchangeRate, Long> {
 
-  @Query(value = "SELECT * FROM exchangerates " +
-      "JOIN currencies baseCurrency ON exchangerates.basecurrencyid = baseCurrency.id " +
-      "JOIN currencies targetCurrency ON exchangerates.targetcurrencyid = targetCurrency.id " +
-      "WHERE baseCurrency.charcode = :#{#baseCurrency} AND targetCurrency.charcode = :#{#targetCurrency}", nativeQuery = true)
+  @Query(value = "SELECT ex FROM ExchangeRate ex "
+      + "WHERE ex.baseCurrency.id = (SELECT c.id FROM Currency c WHERE c.charCode = :baseCurrency) "
+      + "AND ex.targetCurrency.id = (SELECT c.id FROM Currency c WHERE c.charCode = :targetCurrency)")
   Optional<ExchangeRate> findExchangeRateByBaseCurrencyAndTargetCurrency(
       @Param("baseCurrency") String baseCurrency, @Param("targetCurrency") String targetCurrency);
+
 }
