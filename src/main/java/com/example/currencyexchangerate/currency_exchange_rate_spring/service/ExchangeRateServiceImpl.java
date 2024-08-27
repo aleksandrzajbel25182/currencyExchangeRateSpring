@@ -18,9 +18,6 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
   @Autowired
   private ExchangeRateRepository exchangeRateRepository;
 
-  @Autowired
-  private CurrencyRepository currencyRepository;
-
   @Override
   public List<ExchangeRate> getAllExchangeRates() {
     return exchangeRateRepository.findAll();
