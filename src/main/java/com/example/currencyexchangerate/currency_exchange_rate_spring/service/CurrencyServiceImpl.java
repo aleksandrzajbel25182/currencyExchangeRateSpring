@@ -43,7 +43,7 @@ public class CurrencyServiceImpl implements CurrencyService {
   @Transactional
   @Override
   public void upsertCurrencyAll(List<Currency> currencies) {
-    currencyRepository.upsertCurrencyAll(currencies);
+
   }
 
 }

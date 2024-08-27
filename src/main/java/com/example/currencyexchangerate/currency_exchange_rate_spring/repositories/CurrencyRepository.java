@@ -16,10 +16,4 @@ public interface CurrencyRepository extends JpaRepository<Currency, Long> {
 
   Optional<Currency> findByCharCode(String charCode);
 
-
-  @Modifying
-  @Query(value = "INSERT INTO currencies (charcode, fullname) " +
-      "VALUES (:#{#currencies.![charcode]}, :#{#currencies.![fullname]}) " +
-      "ON DUPLICATE KEY UPDATE charcode = VALUES(charcode), fullname = VALUES(fullname)", nativeQuery = true)
-  void upsertCurrencyAll(@Param("currencies") List<Currency> currencies);
 }
