@@ -1,6 +1,7 @@
 package com.example.currencyexchangerate.currency_exchange_rate_spring.service;
 
 import com.example.currencyexchangerate.currency_exchange_rate_spring.entities.ExchangeRate;
+import com.example.currencyexchangerate.currency_exchange_rate_spring.error.ResourceNotCorrectException;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.error.ResourceNotFoundException;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.repositories.CurrencyRepository;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.repositories.ExchangeRateRepository;
@@ -36,12 +37,17 @@ public class ExchangeRateServiceImpl implements ExchangeRateService, ExchangeSer
   @Override
   public ExchangeRate findExchangeRateByBaseCurrencyAndTargetCurrency(String baseCurrency,
       String targetCurrency)
-      throws ResourceNotFoundException {
-    return exchangeRateRepository.findExchangeRateByBaseCurrencyAndTargetCurrency(baseCurrency,
-            targetCurrency)
+      throws ResourceNotFoundException, ResourceNotCorrectException {
+    if (baseCurrency.length() != 3 || targetCurrency.length() != 3) {
+      throw new ResourceNotCorrectException("Char code must be exactly 3 characters. Example: USD");
+    }
+    return exchangeRateRepository.findExchangeRateByBaseCurrencyAndTargetCurrency(
+            baseCurrency.toUpperCase(),
+            targetCurrency.toUpperCase())
         .orElseThrow(
             () -> new ResourceNotFoundException(
-                "Exchanger rate with id " + baseCurrency + " not found"));
+                "The exchange rate of currencies " + baseCurrency + "and " + targetCurrency
+                    + " not found"));
   }
 
   @Override
@@ -58,17 +64,21 @@ public class ExchangeRateServiceImpl implements ExchangeRateService, ExchangeSer
   }
 
   @Override
-  public BigDecimal getRate(String from, String to) {
+  public BigDecimal getRate(String from, String to) throws ResourceNotFoundException {
+
+    String fromUpperCase = from.toUpperCase();
+    String toUpperCase = to.toUpperCase();
+
     // 1. There is a currency pair AB in the `ExchangeRates` table - we take its rate
     Optional<ExchangeRate> exchangeRate = exchangeRateRepository
-        .findExchangeRateByBaseCurrencyAndTargetCurrency(from, to);
+        .findExchangeRateByBaseCurrencyAndTargetCurrency(fromUpperCase, toUpperCase);
     if (exchangeRate.isPresent()) {
       return exchangeRate.get().getRate();
     }
     // 2. In the `ExchangeRates` table, there is a currency pair BA - take its rate,
     //    and count the reverse to get AB
     Optional<ExchangeRate> reverseExchangeRate = exchangeRateRepository
-        .findExchangeRateByBaseCurrencyAndTargetCurrency(to, from);
+        .findExchangeRateByBaseCurrencyAndTargetCurrency(toUpperCase, fromUpperCase);
     if (reverseExchangeRate.isPresent()) {
       return new BigDecimal(1).divide(reverseExchangeRate.get().getRate(), 2, RoundingMode.HALF_UP);
     }
@@ -76,9 +86,9 @@ public class ExchangeRateServiceImpl implements ExchangeRateService, ExchangeSer
     // 3. In the `ExchangeRates` table, there are currency pairs RUB-A and RUB-B
     //    calculate the AB rate from these rates
     Optional<ExchangeRate> exchangeRateRubToA = exchangeRateRepository
-        .findExchangeRateByBaseCurrencyAndTargetCurrency("RUB", from);
+        .findExchangeRateByBaseCurrencyAndTargetCurrency("RUB", fromUpperCase);
     Optional<ExchangeRate> exchangeRateRubToB = exchangeRateRepository
-        .findExchangeRateByBaseCurrencyAndTargetCurrency("RUB", to);
+        .findExchangeRateByBaseCurrencyAndTargetCurrency("RUB", toUpperCase);
 
     if (exchangeRateRubToA.isPresent() && exchangeRateRubToB.isPresent()) {
 
@@ -88,7 +98,8 @@ public class ExchangeRateServiceImpl implements ExchangeRateService, ExchangeSer
       BigDecimal result = BigDecimal.ONE.divide(intermediateResult, 2, RoundingMode.HALF_UP);
       return result;
     }
+    throw new ResourceNotFoundException(
+        "Exchange rate not found for currencies " + from + " and " + to);
 
-    return null;
   }
 }

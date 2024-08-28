@@ -17,4 +17,12 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(new ApplicationError(HttpStatus.NOT_FOUND.value(), e.getMessage()),
         HttpStatus.NOT_FOUND);
   }
+
+  @ExceptionHandler
+  public ResponseEntity<ApplicationError> catchResourceNotCorrectException(
+      ResourceNotCorrectException e) {
+    log.error(e.getMessage(), e);
+    return new ResponseEntity<>(new ApplicationError(HttpStatus.BAD_REQUEST.value(), e.getMessage()),
+        HttpStatus.BAD_REQUEST);
+  }
 }

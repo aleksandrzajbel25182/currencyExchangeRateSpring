@@ -1,6 +1,7 @@
 package com.example.currencyexchangerate.currency_exchange_rate_spring.service;
 
 import com.example.currencyexchangerate.currency_exchange_rate_spring.entities.Currency;
+import com.example.currencyexchangerate.currency_exchange_rate_spring.error.ResourceNotCorrectException;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.error.ResourceNotFoundException;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.repositories.CurrencyRepository;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.service.interfaces.CurrencyService;
@@ -29,8 +30,13 @@ public class CurrencyServiceImpl implements CurrencyService {
   }
 
   @Override
-  public Currency getCurrencyByCharCode(String charCode) throws ResourceNotFoundException {
-    return currencyRepository.findByCharCode(charCode).orElseThrow(
+  public Currency getCurrencyByCharCode(String charCode)
+      throws ResourceNotFoundException, ResourceNotCorrectException {
+    if (charCode.length() != 3) {
+      throw new ResourceNotCorrectException("Char code must be exactly 3 characters. Example: USD");
+    }
+
+    return currencyRepository.findByCharCode(charCode.toUpperCase()).orElseThrow(
         () -> new ResourceNotFoundException("Currency with char code " + charCode + " not found"));
   }
 
