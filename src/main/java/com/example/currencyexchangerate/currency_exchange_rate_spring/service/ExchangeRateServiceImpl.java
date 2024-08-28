@@ -3,7 +3,6 @@ package com.example.currencyexchangerate.currency_exchange_rate_spring.service;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.entities.ExchangeRate;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.error.ResourceNotCorrectException;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.error.ResourceNotFoundException;
-import com.example.currencyexchangerate.currency_exchange_rate_spring.repositories.CurrencyRepository;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.repositories.ExchangeRateRepository;
 import com.example.currencyexchangerate.currency_exchange_rate_spring.service.interfaces.ExchangeRateService;
 
