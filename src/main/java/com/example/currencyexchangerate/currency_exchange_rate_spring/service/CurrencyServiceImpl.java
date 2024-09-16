@@ -9,14 +9,21 @@ import com.example.currencyexchangerate.currency_exchange_rate_spring.service.in
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
 
   @Autowired
   private CurrencyRepository currencyRepository;
+
+  @Autowired
+  private RedisTemplate redisTemplate;
 
   @Override
   public List<Currency> getAllCurrencies() {
@@ -29,15 +36,16 @@ public class CurrencyServiceImpl implements CurrencyService {
         () -> new ResourceNotFoundException("Currency with id " + id + " not found"));
   }
 
+  @Cacheable(value="getCurrencyByCharCode", key="#charCode")
   @Override
   public Currency getCurrencyByCharCode(String charCode)
       throws ResourceNotFoundException, ResourceNotCorrectException {
     if (charCode.length() != 3) {
       throw new ResourceNotCorrectException("Char code must be exactly 3 characters. Example: USD");
     }
-
-    return currencyRepository.findByCharCode(charCode.toUpperCase()).orElseThrow(
-        () -> new ResourceNotFoundException("Currency with char code " + charCode + " not found"));
+    return  currencyRepository.findByCharCode(charCode.toUpperCase()).orElseThrow(
+          () -> new ResourceNotFoundException(
+              "Currency with char code " + charCode + " not found"));
   }
 
   @Transactional
