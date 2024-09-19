@@ -2,6 +2,7 @@ package com.example.currencyexchangerate.currency_exchange_rate_spring.repositor
 
 import com.example.currencyexchangerate.currency_exchange_rate_spring.entities.Currency;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,9 +20,8 @@ public interface CurrencyRepository extends JpaRepository<Currency, Long> {
   @Modifying
   @Query(value = "insert into currencies(charcode, fullname) "
       + "VALUES (:#{#currency.charCode} , :#{#currency.fullName}) "
-      + "ON CONFLICT (charcode) DO UPDATE "
-      + "SET charcode = excluded.charcode , fullname = excluded.fullname", nativeQuery = true)
+      + "ON CONFLICT (charcode) DO NOTHING ", nativeQuery = true)
   void upsertCurrency(@Param("currency") Currency currency);
 
-
+  List<Currency> findCurrenciesByCharCodeIn(List<String> charCodes);
 }

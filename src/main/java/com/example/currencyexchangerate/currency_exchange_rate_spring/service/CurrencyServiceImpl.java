@@ -36,16 +36,16 @@ public class CurrencyServiceImpl implements CurrencyService {
         () -> new ResourceNotFoundException("Currency with id " + id + " not found"));
   }
 
-  @Cacheable(value="getCurrencyByCharCode", key="#charCode")
+  @Cacheable(value = "getCurrencyByCharCode", key = "#charCode")
   @Override
   public Currency getCurrencyByCharCode(String charCode)
       throws ResourceNotFoundException, ResourceNotCorrectException {
     if (charCode.length() != 3) {
       throw new ResourceNotCorrectException("Char code must be exactly 3 characters. Example: USD");
     }
-    return  currencyRepository.findByCharCode(charCode.toUpperCase()).orElseThrow(
-          () -> new ResourceNotFoundException(
-              "Currency with char code " + charCode + " not found"));
+    return currencyRepository.findByCharCode(charCode.toUpperCase()).orElseThrow(
+        () -> new ResourceNotFoundException(
+            "Currency with char code " + charCode + " not found"));
   }
 
   @Transactional
@@ -60,6 +60,11 @@ public class CurrencyServiceImpl implements CurrencyService {
     for (Currency currency : currencies) {
       currencyRepository.upsertCurrency(currency);
     }
+  }
+
+  @Override
+  public List<Currency> findCurrenciesByCharCodeIn(List<String> charCodes) {
+    return currencyRepository.findCurrenciesByCharCodeIn(charCodes);
   }
 
 }
