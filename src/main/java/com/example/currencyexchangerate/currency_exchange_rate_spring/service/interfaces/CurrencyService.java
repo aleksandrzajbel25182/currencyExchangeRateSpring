@@ -18,4 +18,6 @@ public interface CurrencyService {
   void saveCurrencyAll(List<Currency> currencies);
 
   void upsertCurrencyAll(List<Currency> currencies);
+
+  List<Currency> findCurrenciesByCharCodeIn(List<String> charCodes);
 }
