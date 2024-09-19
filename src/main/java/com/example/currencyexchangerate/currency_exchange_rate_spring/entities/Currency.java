@@ -32,4 +32,9 @@ public class Currency implements Serializable {
   @Column(name = "fullname")
   private String fullName;
 
+  public Currency (String charCode, String fullName){
+    this.charCode = charCode;
+    this.fullName = fullName;
+  }
+
 }
